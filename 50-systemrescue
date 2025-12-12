@@ -1,0 +1,43 @@
+#!/bin/sh
+
+iso='/iso/systemrescue-12.02-amd64.iso'
+
+read -r -d '' template <<'EOF'
+menuentry "NAME" {
+	search --file 'ISOFILE' --set isopart
+	probe -u $isopart --set=partuuid
+	loopback loop ($isopart)'ISOFILE'
+	linux (loop)/sysresccd/boot/x86_64/vmlinuz img_dev=/dev/disk/by-uuid/$partuuid img_loop='ISOFILE' archisobasedir=sysresccd ARGUMENTS
+	initrd (loop)/sysresccd/boot/x86_64/sysresccd.img
+}
+EOF
+template="${template//"ISOFILE"/"$iso"}"
+read -r -d '' emptytemplate <<'EOF'
+menuentry "NAME" {
+	COMMAND
+}
+EOF
+new_rescue_entry() {
+	args=("$@")
+	name="${args[0]}"
+	unset args[0]
+	temp="${template/"NAME"/"$name"}"
+	temp="${temp/"ARGUMENTS"/"${args[@]}"}"
+	echo "$temp"
+}
+other_entry() {
+	args=("$@")
+	name="${args[0]}"
+	unset args[0]
+	temp="${emptytemplate/"NAME"/"$name"}"
+	temp="${temp/"COMMAND"/"${args[@]}"}"
+	echo "$temp"
+}
+new_rescue_entry "systemrescue 12.02"
+new_rescue_entry "systemrescue (copytoram)" "copytoram"
+new_rescue_entry "systemrescue (nomodeset)" "nomodeset"
+new_rescue_entry "systemrescue (ttyS0, 115200n8)" "console=tty0" "console=ttyS0,115200n8"
+new_rescue_entry "systemrescue (findroot)" "findroot"
+new_rescue_entry "systemrescue (break before mounting root)" "break"
+other_entry "Reboot" "reboot"
+other_entry "Power Off" "halt"
