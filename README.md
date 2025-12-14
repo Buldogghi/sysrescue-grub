@@ -8,7 +8,7 @@ A way to boot into systemrescue directly from grub without an external usb devic
 
 # Disclaimer
 
-This script doesn't work if you only have windows, you need a bootable Linux partition and obviously Grub as your boot loader.
+This script doesn't work if you only have windows, you need to run this on a Linux partition and obviously have Grub as your boot loader.
 
 # What
 
@@ -19,6 +19,10 @@ This repo's purpose is to have a built-in live ISO with easy access at boot, whi
 
 From my experience using Linux, making mistakes happens like for example by running some scripts from the internet and realizing that your system doesn't boot anymore.
 In these cases I like to use the systemrescue ISO from a live USB to chroot into it and hopefully fix the problem, this is where this repo may come in handy!
+
+# Prerequisites
+
+To make this work, you need a systemrescue ISO file, you can download one [here](https://www.system-rescue.org/Download/). To make it detectable by the script you need to edit the iso='' variable to the absolute path of your file.
 
 # How to install
 
